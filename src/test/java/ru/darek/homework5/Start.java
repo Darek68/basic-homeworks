@@ -26,7 +26,6 @@ public class Start {
         progresArr(arr4);
         System.out.println("-------------------");
         reverseArr(getArr(10, 12));
-
     }
 
     public static void reverseArr(int[] arr) {
