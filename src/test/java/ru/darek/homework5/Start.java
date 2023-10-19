@@ -25,29 +25,33 @@ public class Start {
         int[] arr4 = {0, 2, 3, 4, 7, 34};
         progresArr(arr4);
         System.out.println("-------------------");
-        endToStart(getArr(10, 12));
+        reverseArr(getArr(10, 12));
 
     }
 
-    public static void endToStart(int[] arr) {
-        int[] result = new int[arr.length];
-        for (int i = 0, j = arr.length - 1; i < arr.length; i++, j--) {
-            result[i] = arr[j];
-        }
+    public static void reverseArr(int[] arr) {
         System.out.println("Исходный массив: " + Arrays.toString(arr));
-        System.out.println("Конечный массив: " + Arrays.toString(result));
+        int bufer;
+        for (int i = 0, j = arr.length - 1; i < arr.length/2; i++, j--) {
+            bufer = arr[i];
+            arr[i] = arr[j];
+            arr[j] = bufer;
+        }
+        System.out.println("Конечный массив: " + Arrays.toString(arr));
     }
 
     public static void progresArr(int[] arr) {
-        boolean flg = true;
+        boolean raising = true;
         for (int i = 0; i < arr.length - 1; i++) {
-            if (!(arr[i] < arr[i + 1])) {
+            if (arr[i] >= arr[i + 1]) {
                 System.out.println("Массив " + Arrays.toString(arr) + " не возрастающий!");
-                flg = false;
+                raising = false;
                 break;
             }
         }
-        if (flg) System.out.println("Массив " + Arrays.toString(arr) + " является возрастающим!");
+        if (raising){
+            System.out.println("Массив " + Arrays.toString(arr) + " является возрастающим!");
+        }
     }
 
     public static void balance(int[] arr) { //точка в массиве
@@ -80,17 +84,18 @@ public class Start {
             System.out.println("Массив должен состоять из четного числа элементов!");
         } else {
             System.out.println("Массив: " + Arrays.toString(arr));
-            int sum = Arrays.stream(arr).sum(); // общая сумма
-            int[] arr1 = Arrays.copyOf(arr, arr.length / 2); // первая половинка
-            int sum1 = Arrays.stream(arr1).sum(); // сумма первой половинки
-            int sum2 = sum - sum1;
-            if (sum1 == sum2) {
+            int firstHalfSum = 0,secondHalfSum = 0;
+            for (int i = 0,j= arr.length-1;i < arr.length/2; i++,j--) {
+                firstHalfSum+=arr[i];
+                secondHalfSum+=arr[j];
+            }
+            if (firstHalfSum == secondHalfSum) {
                 System.out.println("Обе половинки равны");
             }
-            if (sum1 > sum2) {
+            if (firstHalfSum > secondHalfSum) {
                 System.out.println("Первая половинка больше");
             }
-            if (sum1 < sum2) {
+            if (firstHalfSum < secondHalfSum) {
                 System.out.println("Вторая половинка больше");
             }
         }
