@@ -61,26 +61,21 @@ public class Start {
 
     public static void diagonal0(int[][] arr) {
         for (int i = 0; i < arr.length; i++) {
-            for (int j = 0; j < arr[0].length; j++) {
-                if (i == j) {
-                    arr[i][j] = 0;
+                    arr[i][i] = 0;
                     arr[i][arr[0].length - i - 1] = 0;
-                }
-            }
         }
     }
 
     public static void squareBySize(int size) { // кадрат *
         for (int i = 0; i < size; i++) {
-            System.out.print("*");
-            for (int j = 0; j < size - 2; j++) {
-                if (i == 0 || i == size - 1) {
+            for (int j = 0; j < size; j++) {
+                if (i == 0 || i == size - 1 || j==0 || j== size-1) {
                     System.out.print("*");
                 } else {
                     System.out.print(" ");
                 }
             }
-            System.out.println("*");
+            System.out.println("");
         }
     }
 
