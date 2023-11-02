@@ -45,7 +45,6 @@ public class Box {
         this.isOpen = true;
         System.out.println("Мы открыли коробку");
     }
-
     public void close() {
         if (!this.isOpen) {
             System.out.println("Коробка и так закрыта!");
