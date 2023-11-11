@@ -1,11 +1,22 @@
+package ru.darek;
+
 public class Cat {
-    String name;
-    int appetite;
-    boolean satiated = false;
+    private String name;
+    private int appetite;
+
+    public int getAppetite() {
+        return appetite;
+    }
+
+    private boolean satiated = false;
 
     public Cat(String name, int appetite) {
         this.name = name;
         this.appetite = appetite;
+    }
+
+    public void setSatiated(boolean satiated) {
+        this.satiated = satiated;
     }
 
     @Override
