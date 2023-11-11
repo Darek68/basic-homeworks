@@ -6,9 +6,7 @@ public class Start {
         Plate plate = new Plate(30);
 
         for (int i = 0; i < cats.length; i++) {
-            if (plate.reduceFood(cats[i].getAppetite())) {
-                cats[i].setSatiated(true);
-            }
+           cats[i].eat(plate);
         }
 
         for (int i = 0; i < cats.length; i++) {

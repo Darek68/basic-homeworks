@@ -3,20 +3,17 @@ package ru.darek;
 public class Cat {
     private String name;
     private int appetite;
-
-    public int getAppetite() {
-        return appetite;
-    }
-
-    private boolean satiated = false;
+    private boolean satiated;
 
     public Cat(String name, int appetite) {
         this.name = name;
         this.appetite = appetite;
     }
 
-    public void setSatiated(boolean satiated) {
-        this.satiated = satiated;
+    public void eat(Plate plate){
+        if (plate.reduceFood(appetite)) {
+            satiated=true;
+        }
     }
 
     @Override
