@@ -86,13 +86,22 @@ public class Start {
         return ages / employees.size() > avg;
     }
 
+//    private static Employee getYoungestEmployee(List<Employee> employees) {
+//        Employee youngestEmployee = employees.get(0);
+//        int youngestAge = 100, currentAge = 0;
+//        for (Employee currentEmployee : employees) {
+//            currentAge = currentEmployee.getAge();
+//            if (currentAge < youngestAge) {
+//                youngestAge = currentAge;
+//                youngestEmployee = currentEmployee;
+//            }
+//        }
+//        return youngestEmployee;
+//    }
     private static Employee getYoungestEmployee(List<Employee> employees) {
         Employee youngestEmployee = employees.get(0);
-        int youngestAge = 100, currentAge = 0;
         for (Employee currentEmployee : employees) {
-            currentAge = currentEmployee.getAge();
-            if (currentAge < youngestAge) {
-                youngestAge = currentAge;
+            if (currentEmployee.getAge() < youngestEmployee.getAge()) {
                 youngestEmployee = currentEmployee;
             }
         }
