@@ -6,17 +6,17 @@ import java.util.List;
 import java.util.Map;
 
 public class PhoneBook {
-    private Map<String,List<Long>> nameMap=new HashMap<String,List<Long>>(); //для поиска по ФИО
-    private Map<Long,String> phoneMap=new HashMap<Long,String>(); //для поиска по телефону
+    private Map<String,List<String>> nameMap=new HashMap<String,List<String>>(); //для поиска по ФИО
+    private Map<String,String> phoneMap=new HashMap<String,String>(); //для поиска по телефону
     public PhoneBook() {
     }
-    public String add(String name, Long phone){
+    public String add(String name, String phone){
         if (name==null||phone==null) return "Переданы не верные данные!";
         if (phoneMap.containsKey(phone)) return ("Номер " + phone + " уже закреплен за абонентом: " + phoneMap.get(phone));
 
         //справочник ФИО
-        if (! nameMap.containsKey(name)) nameMap.put(name, new ArrayList<Long>());
-        List<Long> phones = nameMap.get(name);
+        if (! nameMap.containsKey(name)) nameMap.put(name, new ArrayList<String>());
+        List<String> phones = nameMap.get(name);
         phones.add(phone);
         nameMap.put(name,phones);
 
@@ -27,14 +27,14 @@ public class PhoneBook {
     }
     public String find(String name){
         if (nameMap.containsKey(name)){
-            return name  + ": " +nameMap.get(name).toString();
+            return nameMap.get(name).toString();
         }
-        return name + " - нет такой записи в книжке";
+        return null;
     }
-    public String containsPhoneNumber(Long phone){
+    public boolean containsPhoneNumber(String phone){
         if (phoneMap.containsKey(phone)){
-            return "Номер " + phone + " закреплен за абонентом:  " + phoneMap.get(phone).toString();
+            return true;
         }
-        return "Номер " + phone + " отсутствует в справочнике";
+        return false;
     }
 }
