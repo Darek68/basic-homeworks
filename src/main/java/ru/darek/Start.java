@@ -28,6 +28,9 @@ public class Start {
         System.out.println("Удалили 5й элемент: " + myLinkedList.toString(true));
         myLinkedList.remove(1);
         System.out.println("Удалили 1й элемент: " + myLinkedList.toString(true));
+//        myLinkedList.add(5,"Новое значение");
+//        System.out.println("Поменяли значение: " + myLinkedList.toString(true));
+
 
         System.out.println("Работа очереди:");
         MyQueue<Integer> myQueue=new MyQueue<>();
@@ -56,36 +59,18 @@ public class Start {
 
     public static int[] sort(int[] array) {
         int item = array[0];
-        boolean change = false;
+        boolean isChanged = false;
         for (int i = 0; i < array.length; i++) {
-            change = false;
+            isChanged = false;
             for (int j = 0; j < array.length - 1; j++) {
                 if (array[j] > array[j + 1]) {
                     item = array[j + 1];
                     array[j + 1] = array[j];
                     array[j] = item;
-                    change = true;
+                    isChanged = true;
                 }
             }
-            if (!change) return array;
-        }
-        return array;
-    }
-
-    public static int[] sort2(int[] array) {
-        int item = array[0];
-        boolean change = false;
-        for (int i = 0; i < array.length; i++) {
-            change = false;
-            for (int j = 0; j < array.length - 1; j++) {
-                if (array[j] > array[j + 1]) {
-                    item = array[j + 1];
-                    array[j + 1] = array[j];
-                    array[j] = item;
-                    change = true;
-                }
-            }
-            if (!change) return array;
+            if (!isChanged) return array;
         }
         return array;
     }

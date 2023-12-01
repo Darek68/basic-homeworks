@@ -6,6 +6,7 @@ public class MyLinkedList<T> {
     private int size;
 
     public MyLinkedList() {
+        size = 0;
     }
 
     public void addFirst(T date) {
@@ -35,6 +36,7 @@ public class MyLinkedList<T> {
     }
 
     public void add(int position, T data) {
+        if (position>size) throw new RuntimeException("Попытка записать в несуществующий элемент!");
         Node<T> nodeTmp = first;
         for (int i = 0; i <= position; i++) {
             nodeTmp = nodeTmp.next;
@@ -44,7 +46,7 @@ public class MyLinkedList<T> {
     }
 
     public void remove(int position) {
-        if (position<1||position>size) return;
+        if (position < 1 || position > size) return;
         Node<T> nodeTmp = first;
         for (int i = 0; i < position; i++) {
             if (i == (position - 1)) {
@@ -89,3 +91,16 @@ public class MyLinkedList<T> {
         return res;
     }
 }
+
+class Node<T> {
+    T value;
+     Node<T> previous;
+     Node<T> next;
+
+    public Node(T data, Node<T> previous, Node<T> next) {
+        this.value = data;
+        this.previous = previous;
+        this.next = next;
+    }
+}
+
