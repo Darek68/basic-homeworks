@@ -36,17 +36,14 @@ public class Start {
     }
 
     private static void fileToConsole(String path) {
-        InputStreamReader reader = null;
-        int n = 0;
-        try (FileInputStream inStream = new FileInputStream(path)) {
-            reader = new InputStreamReader(inStream, "UTF-8");
-            System.out.println("Содержимое файла " + path + " :");
-            while ((n = reader.read()) != -1) System.out.print((char) n);
-            System.out.println("<конец файла>\n");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+        try (InputStreamReader in = new InputStreamReader(new FileInputStream(path))) {
+            int n = in.read();
+            while (n != -1) {
+                System.out.print((char) n);
+                n = in.read();
+            }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }
