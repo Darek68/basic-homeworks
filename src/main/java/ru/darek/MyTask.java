@@ -12,7 +12,7 @@ public class MyTask implements Runnable{
     }
     @Override
     public void run(){
-        System.out.println(Thread.currentThread().getName() + " " + start + " - " + stop);
+        //System.out.println(Thread.currentThread().getName() + " " + start + " - " + stop);
         for (int i = start; i < stop; i++) {
             arr[i] = 1.14 * Math.cos(i) * Math.sin(i * 0.2) * Math.cos(i / 1.2);
         }

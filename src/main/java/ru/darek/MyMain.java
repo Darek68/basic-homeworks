@@ -13,8 +13,8 @@ public class MyMain {
         for (int i = 0; i < arr1.length; i++) {
             arr1[i] = 1.14 * Math.cos(i) * Math.sin(i * 0.2) * Math.cos(i / 1.2);
         }
-        System.out.println("Время работы 1 потока: " + (System.currentTimeMillis() - time) + "мс");
-        System.out.println(arr1[lenArr - 3] + "\n");
+        System.out.println("Время работы 1 потока: " + (System.currentTimeMillis() - time) + "мс\n");
+
 
         // хардкорный вариант
         double[] arr2 = new double[lenArr];
@@ -49,16 +49,17 @@ public class MyMain {
         t3.join();
         t4.join();
 
-        System.out.println("Время работы " + cntCores + " хардкорных потоков: " + (System.currentTimeMillis() - time) + "мс");
-        System.out.println(arr2[lenArr - 3] + "\n");
+        System.out.println("Время работы " + cntCores + " хардкорных потоков: " + (System.currentTimeMillis() - time) + "мс\n");
+
 
 // Генерация с вызовом класса MyTask-хардкорные парамметры
         double[] arr3 = new double[lenArr];
-        time = System.currentTimeMillis();
+
         Thread tt1 = new Thread(new MyTask(0, 25000000, arr3));
         Thread tt2 = new Thread(new MyTask(25000000, 50000000, arr3));
         Thread tt3 = new Thread(new MyTask(50000000, 75000000, arr3));
         Thread tt4 = new Thread(new MyTask(75000000, 100000000, arr3));
+        time = System.currentTimeMillis();
         tt1.start();
         tt2.start();
         tt3.start();
@@ -67,8 +68,8 @@ public class MyMain {
         tt2.join();
         tt3.join();
         tt4.join();
-        System.out.println("Время работы " + cntCores + " сгенерированных потоков(MyTask-хардкор): " + (System.currentTimeMillis() - time) + "мс");
-        System.out.println(arr3[lenArr - 3] + "\n");
+        System.out.println("Время работы " + cntCores + " сгенерированных потоков(MyTask-хардкор): " + (System.currentTimeMillis() - time) + "мс\n");
+
 
   //     Генерация с вызовом класса MyTask - динамические параметры
         time = System.currentTimeMillis();
@@ -78,17 +79,15 @@ public class MyMain {
             start = stop;
             stop = (lenArr * (i + 1) / cntCores);
             arrThred[i] = new Thread(new MyTask(start, stop, arr4));
-            arrThred[i].start();
-            arrThred[i].join();
         }
-        System.out.println("Время работы " + cntCores + " сгенерированных потоков(MyTask-динамика): " + (System.currentTimeMillis() - time) + "мс");
-        System.out.println(arr4[lenArr - 3] + "\n");
+        for (int i = 0; i < cntCores; i++) {arrThred[i].start();}
+        for (int i = 0; i < cntCores; i++) {arrThred[i].join();}
+        System.out.println("Время работы " + cntCores + " сгенерированных потоков(MyTask-динамика): " + (System.currentTimeMillis() - time) + "мс\n");
 
 
 // Генерация с лямбдой
         double[] arr5 = new double[lenArr];
         int[][] border = new int[cntCores][2];
-        Long finalTime = time;
         Thread[] arrThredx = new Thread[cntCores];
 
         for (int i = 0; i < cntCores; i++) {
@@ -98,20 +97,15 @@ public class MyMain {
             border[i][1] = stop;
             int finalI = i;
             arrThredx[i] = new Thread(() -> {
-                System.out.println("Старт  потока " + arrThred[finalI].getName() + " " + border[finalI][0] + "-" + border[finalI][1]);
                 for (int j = border[finalI][0]; j < border[finalI][1]; j++) {
                     arr5[j] = 1.14 * Math.cos(j) * Math.sin(j * 0.2) * Math.cos(j / 1.2);
                 }
             });
         }
         time = System.currentTimeMillis();
-        for (int i = 0; i < cntCores; i++) {
-            arrThredx[i].start();
-            arrThredx[i].join();
-        }
-        System.out.println("Время работы " + cntCores + "  потоков сгенерированных лямбдой: " + (System.currentTimeMillis() - time) + "мс");
-        System.out.println(arr5[lenArr - 3] + "\n");
-
+        for (int i = 0; i < cntCores; i++) {arrThredx[i].start();}
+        for (int i = 0; i < cntCores; i++) {arrThredx[i].join();}
+        System.out.println("Время работы " + cntCores + "  потоков сгенерированных лямбдой: " + (System.currentTimeMillis() - time) + "мс\n");
     }
 }
 

@@ -35,10 +35,12 @@ class TestThread {
             start = stop;
             stop = (lenArr * (x + 1) / cntCores);
             arrThred[x]= new MyThread("Thread #" + x,arr1,start,stop);
-            arrThred[x].start();
-            arrThred[x].join();
             System.out.println("Started Thread:" + x);
         }
+        Long time = System.currentTimeMillis();
+        for (int i = 0; i < cntCores; i++) {arrThred[i].start();}
+        for (int i = 0; i < cntCores; i++) {arrThred[i].join();}
+        System.out.println("Время работы " + cntCores + "  потоков - наследников Thred: " + (System.currentTimeMillis() - time) + "мс\n");
     }
 }
 
