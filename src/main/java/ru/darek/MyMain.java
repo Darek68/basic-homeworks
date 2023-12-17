@@ -18,21 +18,14 @@ public class MyMain {
     }
     public static void runMultiStream(int cntCores) throws InterruptedException {
         Long time = System.currentTimeMillis();
-        int start = 0;
-        int stop = 0;
 // Генерация с лямбдой
         double[] arr5 = new double[LEN_ARR];
-        int[][] border = new int[cntCores][2];
         Thread[] arrThredx = new Thread[cntCores];
-
         for (int i = 0; i < cntCores; i++) {
-            start = stop;
-            stop = (LEN_ARR * (i + 1) / cntCores);
-            border[i][0] = start;
-            border[i][1] = stop;
-            int finalI = i;
+            int start = (LEN_ARR * (i) / cntCores);
+            int stop = (LEN_ARR * (i + 1) / cntCores);
             arrThredx[i] = new Thread(() -> {
-                for (int j = border[finalI][0]; j < border[finalI][1]; j++) {
+                for (int j = start; j < stop; j++) {
                     arr5[j] = 1.14 * Math.cos(j) * Math.sin(j * 0.2) * Math.cos(j / 1.2);
                 }
             });
