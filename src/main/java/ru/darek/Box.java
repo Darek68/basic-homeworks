@@ -6,14 +6,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class Box <T extends Fruit> implements Comparable <Box<? extends Fruit>>{
-    private ArrayList<T> arr;
+    private List<T> arr;
 
     public Box(ArrayList<T> arr) {
         this.arr = arr;
     }
-    public String addIntoBox(T element){
+    public void add(T element){
         arr.add(element);
-        return toString();
     }
     public int getWeight(){
         int result=0;
@@ -23,7 +22,7 @@ public class Box <T extends Fruit> implements Comparable <Box<? extends Fruit>>{
         return result;
     }
 
-    public ArrayList<T> getArr() {
+    public List<T> getArr() {
         return arr;
     }
 
@@ -38,9 +37,9 @@ public class Box <T extends Fruit> implements Comparable <Box<? extends Fruit>>{
         return this.getWeight()-box.getWeight();
     }
 
-    public <T> void pourOver(List<? super T> toBox,List<? extends T> fromBox){
+    public <T> void pourOver(Box<? super T> destinationBox,List<? extends T> fromBox){
         for(int i =0; i <fromBox.size(); i++){
-            toBox.add(fromBox.get(i));
+            destinationBox.arr.add(fromBox.get(i));
         }
         this.arr.clear();
     }
