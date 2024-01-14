@@ -37,9 +37,9 @@ public class Box <T extends Fruit> implements Comparable <Box<? extends Fruit>>{
         return this.getWeight()-box.getWeight();
     }
 
-    public <T> void pourOver(Box<? super T> destinationBox,List<? extends T> fromBox){
-        for(int i =0; i <fromBox.size(); i++){
-            destinationBox.arr.add(fromBox.get(i));
+    public <T> void pourOver(Box<? super T> destinationBox,List<? extends T> sourceList){
+        for(int i =0; i <sourceList.size(); i++){
+            destinationBox.arr.add(sourceList.get(i));
         }
         this.arr.clear();
     }
