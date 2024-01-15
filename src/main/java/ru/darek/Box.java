@@ -1,11 +1,9 @@
 package ru.darek;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-public class Box <T extends Fruit> implements Comparable <Box<? extends Fruit>>{
+public class Box <T extends Fruit> {
     private List<T> arr;
 
     public Box(ArrayList<T> arr) {
@@ -22,24 +20,20 @@ public class Box <T extends Fruit> implements Comparable <Box<? extends Fruit>>{
         return result;
     }
 
-    public List<T> getArr() {
-        return arr;
-    }
-
     @Override
     public String toString() {
         return "Box{" +
                 "arr=" + arr +
                 '}';
     }
-    @Override
-    public int compareTo(Box<? extends Fruit> box) {
-        return this.getWeight()-box.getWeight();
+
+    public boolean compareTo(Box<? extends Fruit> box) {
+        return this.getWeight() == box.getWeight();
     }
 
-    public <T> void pourOver(Box<? super T> destinationBox,List<? extends T> sourceList){
-        for(int i =0; i <sourceList.size(); i++){
-            destinationBox.arr.add(sourceList.get(i));
+    public void pourOver(Box<? super T> destinationBox){
+        for(int i =0; i < this.arr.size(); i++){
+            destinationBox.arr.add(this.arr.get(i));
         }
         this.arr.clear();
     }
