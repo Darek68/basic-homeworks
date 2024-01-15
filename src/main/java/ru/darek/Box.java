@@ -32,6 +32,7 @@ public class Box <T extends Fruit> {
     }
 
     public void pourOver(Box<? super T> destinationBox){
+        if(destinationBox==this||destinationBox==null) return;
         for(int i =0; i < this.arr.size(); i++){
             destinationBox.arr.add(this.arr.get(i));
         }

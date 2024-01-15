@@ -26,7 +26,9 @@ public class Main {
 
         System.out.println(boxf.compareTo(boxa));
 
-        boxo.pourOver(boxf/*,boxo.getArr()*/);
+        boxo.pourOver(boxf);
+        boxo.pourOver(boxo);
+        boxo.pourOver(null);
        // boxa.pourOver(boxo.getArr(),boxa.getArr());
        // boxf.pourOver(boxo.getArr(),boxf.getArr());
     }
