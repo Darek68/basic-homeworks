@@ -13,6 +13,10 @@ public class HttpRequest {
         return uri;
     }
 
+    public String getRawRequest() {
+        return rawRequest;
+    }
+
     public HttpMethod getMethod() {
         return method;
     }

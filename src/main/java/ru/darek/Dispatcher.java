@@ -1,5 +1,7 @@
 package ru.darek;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.darek.processors.HelloWorldRequestProcessor;
 import ru.darek.processors.OperationAddRequestProcessor;
 import ru.darek.processors.RequestProcessor;
@@ -11,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Dispatcher {
+    public static final Logger logger = LogManager.getLogger(Dispatcher.class.getName());
     private Map<String, RequestProcessor> router;
     private RequestProcessor unknownRequestProcessor;
 
@@ -24,6 +27,7 @@ public class Dispatcher {
     public void execute(HttpRequest httpRequest, OutputStream output) throws IOException {
         if (!router.containsKey(httpRequest.getUri())) {
             unknownRequestProcessor.execute(httpRequest, output);
+            logger.debug("Unknown request: " + httpRequest.getRawRequest());
             return;
         }
         router.get(httpRequest.getUri()).execute(httpRequest, output);

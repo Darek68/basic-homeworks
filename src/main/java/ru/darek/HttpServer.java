@@ -1,48 +1,49 @@
 package ru.darek;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
+import java.io.OutputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class HttpServer {
+    public static final Logger logger = LogManager.getLogger(HttpServer.class.getName());
     private int port;
     private Dispatcher dispatcher;
-
     public HttpServer(int port) {
         this.port = port;
         this.dispatcher = new Dispatcher();
     }
-
     public void start() {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Сервер запущен на порту: " + port);
+            logger.error("Сервер запущен на порту: " + port);
             while (true) {
-                try (Socket socket = serverSocket.accept()) {
-                    OutputStream o = socket.getOutputStream();
-                    byte[] buffer = new byte[8192];
-                    int n = socket.getInputStream().read(buffer);
-                    String rawRequest = new String(buffer, 0, n);
+                try {
+                    Socket socket = serverSocket.accept();
                     executorService.execute(() -> {
-                        HttpRequest httpRequest = new HttpRequest(rawRequest);
                         try {
-                            dispatcher.execute(httpRequest, o);
+                            byte[] buffer = new byte[8192];
+                            int n = socket.getInputStream().read(buffer);
+                            // System.out.println("Работает поток: " + Thread.currentThread().getName());
+                            logger.info("Работает поток: " + Thread.currentThread().getName());
+                            String rawRequest = new String(buffer, 0, n);
+                            HttpRequest httpRequest = new HttpRequest(rawRequest);
+                            dispatcher.execute(httpRequest, socket.getOutputStream());
                         } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            logger.error("Ошибка в потоке " + Thread.currentThread().getName() + " " + e);
                         }
                     });
-// dispatcher.execute(httpRequest, socket.getOutputStream());
-
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("Ошибка сокета: " + e);
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Исключение в ServerSocket: " + e);
         }
         executorService.shutdown();
     }
