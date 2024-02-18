@@ -23,6 +23,7 @@ public class ClientHandler {
             , "выход из чата /exit"
             , "список активных пользователей /activelist"
             , "история сообщений /history"
+            , "смена ника /changenick newnick"
             , "доступное меню /help"
     );
     private static final String HELP_ADM = String.format("%s\n%s\n%s"
@@ -117,7 +118,7 @@ public class ClientHandler {
                     server.activelist(this);
                 }
                 if (message.startsWith("/changenick")) {
-                    System.out.println("ClientHandler /changenick");
+                    logger.debug("ClientHandler /changenick");
                     String[] elements = message.split(" ", 2);
                     if (elements.length < 2) {
                         sendMessage("Некорректная команда /changenick");

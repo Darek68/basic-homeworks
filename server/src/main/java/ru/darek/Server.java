@@ -140,7 +140,7 @@ public class Server {
         }
         if (banUnban) {
             broadcastMessage("Пользователь " + banUsername + "  получил бан!");
-            System.out.println("banHandler " + banHandler);
+            logger.debug("banHandler " + banHandler);
             if (banHandler != null) banHandler.sendMessage("/exit_kick");
         } else {
             broadcastMessage("Пользователь " + banUsername + "  был разбанен!");
