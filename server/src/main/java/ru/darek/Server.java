@@ -30,7 +30,6 @@ public class Server {
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             logger.info("Сервер запущен на порту " + port + " Ожидание подключения клиентов.");
-            //  userService = new InMemoryUserService();
             userService = new InPostgresUserService();
             System.out.println("Запущен сервис для работы с пользователями");
             while (true) {
