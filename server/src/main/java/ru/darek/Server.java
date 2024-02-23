@@ -15,11 +15,15 @@ public class Server {
     private int port;
     private List<ClientHandler> clients;
     private UserService userService;
-    private static boolean toClose;
-    private static List<String> messages = new LinkedList<>();
 
+    private boolean toClose;
+    private List<String> messages = new LinkedList<>();
+    private StringBuilder activeUsers;
     public UserService getUserService() {
         return userService;
+    }
+    public StringBuilder getActiveUsers() {
+        return activeUsers;
     }
 
     public Server(int port) {
@@ -54,19 +58,22 @@ public class Server {
         }
         writeToMessages(message);
     }
-    private void writeToMessages(String message){
-        if (messages.size()>10)messages.remove(0);
+
+    private void writeToMessages(String message) {
+        if (messages.size() > 10) messages.remove(0);
         messages.add(message);
     }
 
     public synchronized void subscribe(ClientHandler clientHandler) {
         broadcastMessage("Подключился новый клиент " + clientHandler.getUsername());
         clients.add(clientHandler);
+        changeActiveList();
     }
 
     public synchronized void unsubscribe(ClientHandler clientHandler) {
         clients.remove(clientHandler);
         broadcastMessage("Отключился клиент " + clientHandler.getUsername());
+        changeActiveList();
     }
 
     public synchronized boolean isUserBusy(String username) {
@@ -80,19 +87,15 @@ public class Server {
 
     public synchronized void sendPrivateMessage(ClientHandler sender, String receiverUsername, String message) {
         logger.debug("отправитель: " + sender.getUsername() + " получатель: " + receiverUsername + " " + message);
-        boolean findReciver = false;
         for (ClientHandler clientHandler : clients) {
             System.out.println(receiverUsername + " " + clientHandler.getUsername());
             if (clientHandler.getUsername().equals(receiverUsername)) {
                 clientHandler.sendMessage("<private> " + sender.getUsername() + ": " + message);
-                findReciver = true;
+                sender.sendMessage("<private> " + sender.getUsername() + ": " + message);
+                return;
             }
         }
-        if (findReciver) {
-            sender.sendMessage("<private> " + sender.getUsername() + ": " + message);
-        } else {
-            sender.sendMessage("<private> Не найден пользователь: " + receiverUsername);
-        }
+        sender.sendMessage("<private> Не найден пользователь: " + receiverUsername);
     }
 
     public void kick(String kickUsername, ClientHandler admin) {
@@ -146,17 +149,22 @@ public class Server {
         }
         userService.setBanByUsername(banUsername, banUnban);
     }
-    public void activelist(ClientHandler destination) {
-        String message = "Активные пользователи:";
+
+//    public void activeList(ClientHandler destination) {
+//        destination.sendMessage("Активные пользователи:" + activeUsers);
+//    }
+    public void changeActiveList() {
+        activeUsers = new StringBuilder();
+        activeUsers.append("Активные пользователи:");
         for (ClientHandler clientHandler : clients) {
-            if (clientHandler != destination) message += ("\n" + clientHandler.getUsername());
+            activeUsers.append(clientHandler.getUsername());
         }
-        destination.sendMessage(message);
     }
-    public void changenick(ClientHandler user,String newUsername) {
+
+    public void changeNick(ClientHandler user, String newUsername) {
         logger.debug(user.getUsername() + " >>> " + newUsername);
         String currentUserName = user.getUsername();
-        if(currentUserName.equals(newUsername)){
+        if (currentUserName.equals(newUsername)) {
             user.sendMessage("У вас уже имя: " + newUsername);
             return;
         }
@@ -164,15 +172,18 @@ public class Server {
             user.sendMessage("Имя " + newUsername + " уже занято!");
             return;
         }
-        userService.setNewUsername(currentUserName,newUsername);
+        userService.setNewUsername(currentUserName, newUsername);
         user.sendMessage("Ваш ник был успешно изменен на: " + newUsername + ". Перезайдите!");
         user.sendMessage("/exit_kick");
     }
+
     public String getHistory() {
-        String result = "--history:\n";
+        StringBuilder result = new StringBuilder("--history:\n");
         for (int i = 0; i < messages.size(); i++) {
-            result += (messages.get(i) + "\n");
+            result.append (messages.get(i));
+            result.append ("\n");
         }
-        return result + "--end history.";
+        result.append ("--end history.");
+        return result.toString();
     }
 }

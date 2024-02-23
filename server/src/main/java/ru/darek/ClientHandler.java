@@ -16,7 +16,7 @@ public class ClientHandler {
     private DataInputStream in;
     private String username;
     private boolean isAdmin;
-    private static final String HELP = String.format("%s\n%s\n%s\n%s\n%s\n%s\n%s"
+    private static final String HELP = String.format("%s\n%s\n%s\n%s\n%s\n%s\n%s\n"
             , "регистрация /register login password name"
             , "аутентификация /auth login password"
             , "личное сообщение /w name message"
@@ -26,7 +26,7 @@ public class ClientHandler {
             , "смена ника /changenick newnick"
             , "доступное меню /help"
     );
-    private static final String HELP_ADM = String.format("%s\n%s\n%s"
+    private static final String HELP_ADM = HELP + String.format("%s\n%s\n%s"
             , "забанить пользователя /ban name"
             , "разбанить пользователя /unban name"
             , "остановка сервера /shutdown"
@@ -74,61 +74,62 @@ public class ClientHandler {
                 if (message.startsWith("/kick ")) {
                     if (!isAdmin) {
                         sendMessage("Вы не обладаете правами админа!");
-                    } else {
-                        String[] elements = message.split(" ", 2);
-                        if (elements.length < 2) {
-                            sendMessage("Некорректная команда /kick");
-                        } else {
-                            server.kick(elements[1], this);
-                        }
+                        continue;
                     }
+                    String[] elements = message.split(" ", 2);
+                    if (elements.length < 2) {
+                        sendMessage("Некорректная команда /kick");
+                        continue;
+                    }
+                    server.kick(elements[1], this);
                 }
                 if (message.startsWith("/shutdown")) {
                     if (!isAdmin) {
                         sendMessage("Вы не обладаете правами админа!");
-                    } else {
-                        server.shutdown();
+                        continue;
                     }
+                    server.shutdown();
                 }
-                if (message.startsWith("/ban")) {
+                if (message.startsWith("/ban ")) {
                     if (!isAdmin) {
                         sendMessage("Вы не обладаете правами админа!");
-                    } else {
-                        String[] elements = message.split(" ", 2);
-                        if (elements.length < 2) {
-                            sendMessage("Некорректная команда /ban");
-                        } else {
-                            server.ban(elements[1], this, true);
-                        }
+                        continue;
                     }
+                    String[] elements = message.split(" ", 2);
+                    if (elements.length < 2) {
+                        sendMessage("Некорректная команда /ban");
+                        continue;
+                    }
+                    server.ban(elements[1], this, true);
                 }
-                if (message.startsWith("/unban")) {
+                if (message.startsWith("/unban ")) {
                     if (!isAdmin) {
                         sendMessage("Вы не обладаете правами админа!");
-                    } else {
-                        String[] elements = message.split(" ", 2);
-                        if (elements.length < 2) {
-                            sendMessage("Некорректная команда /unban");
-                        } else {
-                            server.ban(elements[1], this, false);
-                        }
+                        continue;
                     }
+                    String[] elements = message.split(" ", 2);
+                    if (elements.length < 2) {
+                        sendMessage("Некорректная команда /unban");
+                        continue;
+                    }
+                    server.ban(elements[1], this, false);
                 }
                 if (message.startsWith("/activelist")) {
-                    server.activelist(this);
+                    //server.activeList(this);
+                    sendMessage("Активные пользователи:" + server.getActiveUsers());
                 }
                 if (message.startsWith("/changenick")) {
                     logger.debug("ClientHandler /changenick");
                     String[] elements = message.split(" ", 2);
                     if (elements.length < 2) {
                         sendMessage("Некорректная команда /changenick");
-                    } else {
-                        server.changenick(this, elements[1]);
+                        continue;
                     }
+                    server.changeNick(this, elements[1]);
                 }
                 if (message.startsWith("/help")) {
                     if (isAdmin) {
-                        sendMessage(HELP + "\n" + HELP_ADM);
+                        sendMessage(HELP_ADM);
                     } else {
                         sendMessage(HELP);
                     }
@@ -242,7 +243,7 @@ public class ClientHandler {
                 isSucceed = tryToAuthenticate(message);
             } else if (message.startsWith("/register ")) {
                 isSucceed = register(message);
-            } else if (message.startsWith("/help")){
+            } else if (message.startsWith("/help")) {
                 sendMessage(HELP);
             } else {
                 sendMessage("СЕРВЕР: требуется войти в учетную запись или зарегистрироваться");

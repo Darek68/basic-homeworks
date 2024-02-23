@@ -96,11 +96,11 @@ public class InPostgresUserService implements UserService {
             try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USER_BY_LOGIN_SQL)) {
                 preparedStatement.setString(1, login);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    while (resultSet.next()) {
+                  //  while (resultSet.next()) {
                         String username = resultSet.getString(3);
                         logger.debug("логин " + login + " уже занят пользователем: " + username);
                         return true;
-                    }
+                  //  }
                 }
             }
         } catch (SQLException e) {
