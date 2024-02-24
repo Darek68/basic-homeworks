@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +35,8 @@ public class Server {
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             logger.info("Сервер запущен на порту " + port + " Ожидание подключения клиентов.");
-            userService = new InPostgresUserService();
+         //   userService = new InPostgresUserService();
+            userService = new InPostgresDAOUserService();
             System.out.println("Запущен сервис для работы с пользователями");
             while (true) {
                 Socket socket = serverSocket.accept();
@@ -49,6 +51,10 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
+//        } catch (SQLException e) {
+//            logger.error("Попытка подключения к БД вызвала исключение: " + e.getMessage());
+//            e.printStackTrace();
+//        }
     }
 
     public synchronized void broadcastMessage(String message) {
@@ -150,14 +156,11 @@ public class Server {
         userService.setBanByUsername(banUsername, banUnban);
     }
 
-//    public void activeList(ClientHandler destination) {
-//        destination.sendMessage("Активные пользователи:" + activeUsers);
-//    }
     public void changeActiveList() {
         activeUsers = new StringBuilder();
         activeUsers.append("Активные пользователи:");
         for (ClientHandler clientHandler : clients) {
-            activeUsers.append(clientHandler.getUsername());
+            activeUsers.append("\n").append(clientHandler.getUsername());
         }
     }
 
@@ -180,8 +183,7 @@ public class Server {
     public String getHistory() {
         StringBuilder result = new StringBuilder("--history:\n");
         for (int i = 0; i < messages.size(); i++) {
-            result.append (messages.get(i));
-            result.append ("\n");
+            result.append (messages.get(i)).append("\n");
         }
         result.append ("--end history.");
         return result.toString();

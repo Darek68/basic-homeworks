@@ -116,7 +116,7 @@ public class ClientHandler {
                 }
                 if (message.startsWith("/activelist")) {
                     //server.activeList(this);
-                    sendMessage("Активные пользователи:" + server.getActiveUsers());
+                    sendMessage(server.getActiveUsers().toString());
                 }
                 if (message.startsWith("/changenick")) {
                     logger.debug("ClientHandler /changenick");

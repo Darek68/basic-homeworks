@@ -8,9 +8,11 @@ import org.mindrot.jbcrypt.BCrypt;
 
 public class InPostgresUserService implements UserService {
     public static final Logger logger = LogManager.getLogger(InPostgresUserService.class.getName());
+    private static ConnectionsHelper connectionsHelper;
     private static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/postgres";
     //  private  static final String SELECT_USERS_SQL = "SELECT u.login, u.username FROM homework24.users u WHERE u.login = ? AND u.password = ?;";
     private static final String SELECT_USERS_SQL = "SELECT u.login,u.hashpass, u.username FROM homework24.users u WHERE u.login = ?;";
+    PreparedStatement preparedStatementUsers;
     private static final String SELECT_IS_ADMIN_SQL = """
                SELECT u.login FROM homework24.users u, homework24.usertorole ur,homework24.roles r 
                WHERE u.username = ? AND u.login = ur.user_id AND r.id = ur.role_id AND r.name = 'ADMIN';
@@ -25,30 +27,67 @@ public class InPostgresUserService implements UserService {
             """;
     private static final String UPDATE_BAN_BY_USERNAME_SQL = "UPDATE homework24.users u SET ban = ? WHERE u.username = ?;";
     private static final String UPDATE_USERNAME_BY_USERNAME_SQL = "UPDATE homework24.users u SET username = ? WHERE u.username = ?;";
+    private Connection connection;
 
-    @Override
-    public String getUsernameByLoginAndPassword(String login, String password) {
-        try (Connection connection = DriverManager.getConnection(DATABASE_URL, "postgres", "352800")) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USERS_SQL)) {
-                System.out.println("login: " + login + " password: " + password);
-                preparedStatement.setString(1, login);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    while (resultSet.next()) {
-                        logger.debug(resultSet.getString(1) + " " + resultSet.getString(2) + " " + resultSet.getString(3));
-                        if (BCrypt.checkpw(password, resultSet.getString(2))) {
-                            String username = resultSet.getString(3);
-                            return username;
-                        }
+    static {
+        try {
+            connectionsHelper = new ConnectionsHelper();
+        } catch (SQLException e) {
+            logger.error("Попытка коннекта к БД вызвала исключение: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+//    public InPostgresUserService() throws SQLException {
+//        connection = DriverManager.getConnection(DATABASE_URL, "postgres", "352800");
+//        preparedStatementUsers = connection.prepareStatement(SELECT_USERS_SQL);
+//        logger.info("Успешный конект к БД");
+//    }
+@Override
+public String getUsernameByLoginAndPassword(String login, String password) {
+        try  {
+            System.out.println("login: " + login + " password: " + password);
+            connectionsHelper.preparedStatementUsers.setString(1, login);
+            try (ResultSet resultSet = connectionsHelper.preparedStatementUsers.executeQuery()) {
+                while (resultSet.next()) {
+                    logger.debug(resultSet.getString(1) + " " + resultSet.getString(2) + " " + resultSet.getString(3));
+                    if (BCrypt.checkpw(password, resultSet.getString(2))) {
+                        String username = resultSet.getString(3);
+                        return username;
                     }
                 }
             }
-        } catch (SQLException e) {
-            logger.error("Поиск пользователя в БД вызвал исключение: " + e.getMessage());
-            e.printStackTrace();
-        }
-        logger.debug("Не нашли пользователя " + login);
-        return null;
+    } catch (SQLException e) {
+        logger.error("Поиск пользователя в БД вызвал исключение: " + e.getMessage());
+        e.printStackTrace();
     }
+    logger.debug("Не нашли пользователя " + login);
+    return null;
+}
+
+//    @Override
+//    public String getUsernameByLoginAndPassword(String login, String password) {
+//        try (Connection connection = DriverManager.getConnection(DATABASE_URL, "postgres", "352800")) {
+//            try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USERS_SQL)) {
+//                System.out.println("login: " + login + " password: " + password);
+//                preparedStatement.setString(1, login);
+//                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+//                    while (resultSet.next()) {
+//                        logger.debug(resultSet.getString(1) + " " + resultSet.getString(2) + " " + resultSet.getString(3));
+//                        if (BCrypt.checkpw(password, resultSet.getString(2))) {
+//                            String username = resultSet.getString(3);
+//                            return username;
+//                        }
+//                    }
+//                }
+//            }
+//        } catch (SQLException e) {
+//            logger.error("Поиск пользователя в БД вызвал исключение: " + e.getMessage());
+//            e.printStackTrace();
+//        }
+//        logger.debug("Не нашли пользователя " + login);
+//        return null;
+//    }
 
     @Override
     public boolean getIsAdminByUsername(String username) {
@@ -56,11 +95,12 @@ public class InPostgresUserService implements UserService {
             try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_IS_ADMIN_SQL)) {
                 preparedStatement.setString(1, username);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    while (resultSet.next()) {
-                        String role = resultSet.getString(1);
-                        logger.info("InPostgresUserService: пользователь " + username + " имеет роль ADMIN");
-                        return true;
-                    }
+                    if (resultSet.next()) {
+                    //    while (resultSet.next()) {
+                    //       String role = resultSet.getString(1);
+                    logger.info("InPostgresUserService: пользователь " + username + " имеет роль ADMIN");
+                    return true;
+                       }
                 }
             }
         } catch (SQLException e) {
@@ -96,11 +136,12 @@ public class InPostgresUserService implements UserService {
             try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USER_BY_LOGIN_SQL)) {
                 preparedStatement.setString(1, login);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                  //  while (resultSet.next()) {
-                        String username = resultSet.getString(3);
-                        logger.debug("логин " + login + " уже занят пользователем: " + username);
-                        return true;
-                  //  }
+                    if (resultSet.next()) {
+                    //  while (resultSet.next()) {
+                    String username = resultSet.getString(3);
+                    logger.debug("логин " + login + " уже занят пользователем: " + username);
+                    return true;
+                      }
                 }
             }
         } catch (SQLException e) {
@@ -116,7 +157,8 @@ public class InPostgresUserService implements UserService {
             try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USER_BY_USERNAME_SQL)) {
                 preparedStatement.setString(1, username);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    while (resultSet.next()) {
+                    if (resultSet.next()) {
+                  //  while (resultSet.next()) {
                         String login = resultSet.getString(1);
                         logger.debug("Пользователь " + username + " уже занят логином: " + login);
                         return true;
@@ -150,7 +192,8 @@ public class InPostgresUserService implements UserService {
             try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USER_BY_USERNAME_SQL)) {
                 preparedStatement.setString(1, username);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    while (resultSet.next()) {
+                    if (resultSet.next()) {
+                 //   while (resultSet.next()) {
                         return resultSet.getBoolean(4);
                     }
                 }
