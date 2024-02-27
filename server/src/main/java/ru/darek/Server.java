@@ -35,8 +35,9 @@ public class Server {
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             logger.info("Сервер запущен на порту " + port + " Ожидание подключения клиентов.");
-         //   userService = new InPostgresUserService();
-            userService = new InPostgresDAOUserService();
+            // todo допилить выбор UserService в зависимости от параметра запуска
+         //   userService = new InPostgresDAOUserService();
+            userService = new InMemoryUserService();
             System.out.println("Запущен сервис для работы с пользователями");
             while (true) {
                 Socket socket = serverSocket.accept();
