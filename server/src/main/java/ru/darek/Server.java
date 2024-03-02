@@ -20,9 +20,11 @@ public class Server {
     private boolean toClose;
     private List<String> messages = new LinkedList<>();
     private StringBuilder activeUsers;
+
     public UserService getUserService() {
         return userService;
     }
+
     public StringBuilder getActiveUsers() {
         return activeUsers;
     }
@@ -32,12 +34,18 @@ public class Server {
         this.clients = new ArrayList<>();
     }
 
-    public void start() {
+    public void start(boolean withBD) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             logger.info("Сервер запущен на порту " + port + " Ожидание подключения клиентов.");
-            // todo допилить выбор UserService в зависимости от параметра запуска
-         //   userService = new InPostgresDAOUserService();
-            userService = new InMemoryUserService();
+            if (withBD) {
+                userService = new InPostgresDAOUserService();
+                logger.info("Используется БД Postgresql.");
+            } else {
+                userService = new InMemoryUserService();
+                logger.info("Работа без БД.");
+            }
+            //   userService = new InPostgresDAOUserService();
+            //   userService = new InMemoryUserService();
             System.out.println("Запущен сервис для работы с пользователями");
             while (true) {
                 Socket socket = serverSocket.accept();
@@ -184,9 +192,9 @@ public class Server {
     public String getHistory() {
         StringBuilder result = new StringBuilder("--history:\n");
         for (int i = 0; i < messages.size(); i++) {
-            result.append (messages.get(i)).append("\n");
+            result.append(messages.get(i)).append("\n");
         }
-        result.append ("--end history.");
+        result.append("--end history.");
         return result.toString();
     }
 }

@@ -26,7 +26,8 @@ public class ClientApplication {
     private static DataOutputStream out;
     public static void main(String[] args) {
         logger.info("Клиент стартовал с параметрами args: " + Arrays.toString(args));
-        String ipAddr = "localhost";
+      //  String ipAddr = "localhost";
+        String ipAddr = "94.142.136.92";
         int port = 8189;
         if (args.length > 0) ipAddr = args[0];
         if (args.length > 1) {
